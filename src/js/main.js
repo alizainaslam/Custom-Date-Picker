@@ -5,7 +5,7 @@ document.querySelector("form").addEventListener("submit", submitForm);
 
 /**
  * Create new Date
- * @type {Date}
+ * @type {Date} newDate
  */
 const newDate = new Date();
 
@@ -26,7 +26,8 @@ const currentYear = newDate.getFullYear();
 const maximumYear = currentYear + 5;
 
 const listOfYears = [];
-let i = currentYear - 1; // Without - 1 i is starting from currentYear + 1
+
+let i = currentYear - 1;
 while (i < maximumYear) {
   i++;
   listOfYears.push(i);
@@ -49,7 +50,9 @@ listOfYears.forEach((year) => {
  * @type {Array} - listOfMonths
  */
 const currentMonth = newDate.getMonth();
+
 const listOfMonths = [];
+
 Array.from({ length: 12 }, (_, i) => {
   return listOfMonths.push(
     new Date(currentYear, i).toLocaleDateString(undefined, {
@@ -58,19 +61,22 @@ Array.from({ length: 12 }, (_, i) => {
   );
 });
 
-/**
- * Fix bug : SHould be selected value and text current month 🔴
- */
-listOfMonths.forEach((month) => {
+listOfMonths.forEach((month, index) => {
   const option = document.createElement("option");
   option.value = month;
   option.textContent = month;
-
   setMonth.appendChild(option);
+
+  if (index < currentMonth) {
+    option.disabled = true;
+  }
 });
+
+setMonth.value = listOfMonths[currentMonth];
+
 /**
  * Handle submission form
- * @param {Event} event
+ * @type {Event} event
  */
 function submitForm(event) {
   event.preventDefault();

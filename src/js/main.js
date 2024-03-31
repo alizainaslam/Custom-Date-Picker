@@ -160,5 +160,5 @@ document.querySelector("form").addEventListener("submit", submitForm);
  */
 function submitForm(event) {
   event.preventDefault();
-  console.log(setWeekday.value, setMonth.value, setYear.value);
+  alert(`${setWeekday.value} ${setMonth.value} ${setYear.value}`);
 }

@@ -1,29 +1,10 @@
 /**
- * DOM element representing the year select input.
+ * DOM element representing the each select input.
  * @type {HTMLSelectElement}
  */
 const setYear = document.querySelector("#year");
-
-/**
- * DOM element representing the month select input.
- * @type {HTMLSelectElement}
- */
 const setMonth = document.querySelector("#month");
-
-/**
- * DOM element representing the weekday select input.
- * @type {HTMLSelectElement}
- */
 const setWeekday = document.querySelector("#weekday");
-
-/**
- * Function to handle form submission.
- * @param {Event} event - The submit event,
- */
-function submitForm(event) {
-  event.preventDefault();
-  console.log(setYear.value, setMonth.value);
-}
 
 /**
  * Create new Date object
@@ -64,6 +45,7 @@ listOfYears.forEach((year) => {
 
 /**
  * The current month
+ * @type {string}
  */
 const currentMonth = newDate.getMonth();
 
@@ -82,7 +64,7 @@ Array.from({ length: 12 }, (_, i) => {
   );
 });
 
-// Populate the year select input with options.
+// Populate the month select input with options.
 listOfMonths.forEach((month, index) => {
   const option = document.createElement("option");
   option.value = month;
@@ -110,5 +92,73 @@ setYear.addEventListener("change", () => {
   });
 });
 
+/**
+ * The current weekday
+ * @type {string}
+ */
+const currentWeekday = newDate.getDay();
+
+/**
+ *  Array to store the list of weekday names.
+ * @type {string[]}
+ */
+const listOfWeekDays = [];
+
+// Populate the list of weekday names.
+Array.from({ length: 7 }, (_, i) => {
+  const dayIndex = i + 3 + currentWeekday;
+  return listOfWeekDays.push(
+    new Date(currentYear, currentMonth, dayIndex).toLocaleDateString(
+      undefined,
+      {
+        weekday: "long",
+      }
+    )
+  );
+});
+
+// Populate the weekday select input with options.
+listOfWeekDays.forEach((day, index) => {
+  const option = document.createElement("option");
+  option.value = day;
+  option.textContent = day;
+  setWeekday.appendChild(option);
+
+  // Disable past days
+  if (index !== currentWeekday) {
+    option.disabled = true;
+  }
+});
+
+// Set the default value of the weekday select input.
+setWeekday.value = listOfWeekDays[currentWeekday];
+
+// Disable past days 🔴
+setMonth.addEventListener("change", () => {
+  const selectedMonthIndex = listOfMonths.indexOf(setMonth.value);
+  if (selectedMonthIndex !== listOfMonths[currentMonth]) {
+    Array.from(setWeekday).forEach((day) => {
+      if (day.disabled) {
+        day.disabled = false;
+      } else if (selectedMonthIndex > currentMonth) {
+        day.disabled = false;
+      } else if (selectedMonthIndex === currentMonth) {
+        if (day.value !== listOfWeekDays[currentWeekday]) {
+          day.disabled = true;
+        }
+      }
+    });
+  }
+});
+
 // Add event listener to the form for submission.
 document.querySelector("form").addEventListener("submit", submitForm);
+
+/**
+ * Function to handle form submission.
+ * @param {Event} event - The submit event,
+ */
+function submitForm(event) {
+  event.preventDefault();
+  console.log(setWeekday.value, setMonth.value, setYear.value);
+}

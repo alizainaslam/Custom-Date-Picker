@@ -90,6 +90,13 @@ setYear.addEventListener("change", () => {
       month.disabled = true;
     }
   });
+
+  // Handle if selectedYear bigger than currentYear, It'll effect on month's value.
+  if (selectedYear > currentYear) {
+    setMonth.value = listOfMonths[0];
+  } else {
+    setMonth.value = listOfMonths[currentMonth];
+  }
 });
 
 /**
@@ -102,54 +109,26 @@ const currentWeekday = newDate.getDay();
  *  Array to store the list of weekday names.
  * @type {string[]}
  */
-const listOfWeekDays = [];
-
-// Populate the list of weekday names.
-Array.from({ length: 7 }, (_, i) => {
-  const dayIndex = i + 3 + currentWeekday;
-  return listOfWeekDays.push(
-    new Date(currentYear, currentMonth, dayIndex).toLocaleDateString(
-      undefined,
-      {
-        weekday: "long",
-      }
-    )
-  );
-});
+const listOfWeekDays = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Thursday",
+  "Wednesday",
+  "Friday",
+  "Saturday",
+];
 
 // Populate the weekday select input with options.
-listOfWeekDays.forEach((day, index) => {
+listOfWeekDays.forEach((day) => {
   const option = document.createElement("option");
   option.value = day;
   option.textContent = day;
   setWeekday.appendChild(option);
-
-  // Disable past days
-  if (index !== currentWeekday) {
-    option.disabled = true;
-  }
 });
 
 // Set the default value of the weekday select input.
 setWeekday.value = listOfWeekDays[currentWeekday];
-
-// Disable past days 🔴
-setMonth.addEventListener("change", () => {
-  const selectedMonthIndex = listOfMonths.indexOf(setMonth.value);
-  if (selectedMonthIndex !== listOfMonths[currentMonth]) {
-    Array.from(setWeekday).forEach((day) => {
-      if (day.disabled) {
-        day.disabled = false;
-      } else if (selectedMonthIndex > currentMonth) {
-        day.disabled = false;
-      } else if (selectedMonthIndex === currentMonth) {
-        if (day.value !== listOfWeekDays[currentWeekday]) {
-          day.disabled = true;
-        }
-      }
-    });
-  }
-});
 
 // Add event listener to the form for submission.
 document.querySelector("form").addEventListener("submit", submitForm);

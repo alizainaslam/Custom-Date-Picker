@@ -4,140 +4,88 @@
  */
 const setYear = document.querySelector("#year");
 const setMonth = document.querySelector("#month");
-const setWeekday = document.querySelector("#weekday");
+const setDay = document.querySelector("#day");
 
-/**
- * Create new Date object
- */
-const newDate = new Date();
+// Year
+const currentYear = new Date().getFullYear();
+const maximumYear = currentYear + 5; // The maximum year allowed currentYear + 5.
 
-/**
- * The current year
- * @type {number}
- */
-const currentYear = newDate.getFullYear();
-
-/**
- * The maximun year allowed, which is the current year plus 5.
- * @type {number}
- */
-const maximumYear = currentYear + 5;
-
-/**
- * Array to store the list of years
- * @type {number[]}
- */
-const listOfYears = [];
-
-let i = currentYear - 1;
-while (i < maximumYear) {
-  i++;
-  listOfYears.push(i);
+for (let i = currentYear; i < maximumYear; i++) {
+  const option = document.createElement("option");
+  option.value = i;
+  option.text = i;
+  setYear.appendChild(option);
 }
 
-// Populate the year select input with options.
-listOfYears.forEach((year) => {
-  const option = document.createElement("option");
-  option.value = year;
-  option.text = year;
-  setYear.appendChild(option);
-});
-
-/**
- * The current month
- * @type {string}
- */
-const currentMonth = newDate.getMonth();
-
-/**
- * Array to store the list of month names.
- * @type {string[]}
- */
-const listOfMonths = [];
-
-// Populate the list of month names.
-Array.from({ length: 12 }, (_, i) => {
-  return listOfMonths.push(
-    new Date(currentYear, i).toLocaleDateString(undefined, {
+// Month
+const currentMonth = new Date().getMonth();
+const monthNames = [];
+for (let i = 0; i < 12; i++) {
+  const monthOption = document.createElement("option");
+  const monthList = new Date(currentYear, i).toLocaleDateString(
+    navigator.language,
+    {
       month: "long",
-    })
-  );
-});
-
-// Populate the month select input with options.
-listOfMonths.forEach((month, index) => {
-  const option = document.createElement("option");
-  option.value = month;
-  option.textContent = month;
-  setMonth.appendChild(option);
-
-  // Disable past months
-  if (index < currentMonth) {
-    option.disabled = true;
-  }
-});
-
-// Set the default value of the month select input.
-setMonth.value = listOfMonths[currentMonth];
-
-// Handle past month's values if year is bigger than the current year.
-setYear.addEventListener("change", () => {
-  const selectedYear = parseInt(setYear.value);
-  Array.from(setMonth).forEach((month, index) => {
-    if (selectedYear > currentYear && index < currentMonth) {
-      month.disabled = false;
-    } else if (selectedYear <= currentYear && index < currentMonth) {
-      month.disabled = true;
     }
-  });
+  );
 
-  // Handle if selectedYear bigger than currentYear, It'll effect on month's value.
-  if (selectedYear > currentYear) {
-    setMonth.value = listOfMonths[0];
+  monthOption.textContent = monthList;
+  monthNames.push(monthList);
+  setMonth.value = monthNames[currentMonth];
+  setMonth.appendChild(monthOption);
+
+  if (i < currentMonth) {
+    monthOption.disabled = true;
+  }
+}
+
+// Month Date
+const dateOfMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+const currentDay = new Date().getDate();
+for (let i = 1; i <= dateOfMonth; i++) {
+  const dateOption = document.createElement("option");
+  dateOption.textContent = i;
+  setDay.value = currentDay;
+  setDay.appendChild(dateOption);
+
+  if (i < currentDay) {
+    dateOption.disabled = true;
+  }
+}
+
+// Event Handler
+setYear.addEventListener("change", () => {
+  if (setYear.value > currentYear) {
+    for (let i = 0; i < setMonth.length; i++) {
+      setMonth[i].disabled = false;
+    }
   } else {
-    setMonth.value = listOfMonths[currentMonth];
+    for (let i = 0; i < setMonth.length; i++) {
+      if (i < currentMonth) {
+        setMonth[i].disabled = true;
+      }
+    }
   }
 });
 
-/**
- * The current weekday
- * @type {string}
- */
-const currentWeekday = newDate.getDay();
-
-/**
- *  Array to store the list of weekday names.
- * @type {string[]}
- */
-const listOfWeekDays = [
-  "Sunday",
-  "Monday",
-  "Tuesday",
-  "Thursday",
-  "Wednesday",
-  "Friday",
-  "Saturday",
-];
-
-// Populate the weekday select input with options.
-listOfWeekDays.forEach((day) => {
-  const option = document.createElement("option");
-  option.value = day;
-  option.textContent = day;
-  setWeekday.appendChild(option);
+setMonth.addEventListener("change", () => {
+  if (setMonth.value > monthNames[currentMonth]) {
+    for (let i = 0; i < setDay.length; i++) {
+      setDay[i].disabled = false;
+    }
+  } else {
+    for (let i = 0; i < setDay.length; i++) {
+      if (i < currentDay) {
+        setDay[i].disabled = true;
+      }
+    }
+  }
 });
-
-// Set the default value of the weekday select input.
-setWeekday.value = listOfWeekDays[currentWeekday];
 
 // Add event listener to the form for submission.
 document.querySelector("form").addEventListener("submit", submitForm);
 
-/**
- * Function to handle form submission.
- * @param {Event} event - The submit event,
- */
 function submitForm(event) {
   event.preventDefault();
-  alert(`${setWeekday.value} ${setMonth.value} ${setYear.value}`);
+  alert(`${setDay.value} ${setMonth.value} ${setYear.value}`);
 }

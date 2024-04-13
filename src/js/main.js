@@ -4,7 +4,7 @@
  */
 const setYear = document.querySelector("#year");
 const setMonth = document.querySelector("#month");
-const setDay = document.querySelector("#day");
+const setDate = document.querySelector("#date");
 
 // Year
 const currentYear = new Date().getFullYear();
@@ -19,7 +19,7 @@ for (let i = currentYear; i < maximumYear; i++) {
 
 // Month
 const currentMonth = new Date().getMonth();
-const monthNames = [];
+const monthNameList = [];
 for (let i = 0; i < 12; i++) {
   const monthOption = document.createElement("option");
   const monthList = new Date(currentYear, i).toLocaleDateString(
@@ -30,55 +30,76 @@ for (let i = 0; i < 12; i++) {
   );
 
   monthOption.textContent = monthList;
-  monthNames.push(monthList);
-  setMonth.value = monthNames[currentMonth];
+  monthNameList.push(monthList);
   setMonth.appendChild(monthOption);
 
-  if (i < currentMonth) {
-    monthOption.disabled = true;
-  }
+  monthOption.hidden = i < currentMonth;
 }
+setMonth.value = monthNameList[currentMonth];
 
 // Month Date
-const dateOfMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-const currentDay = new Date().getDate();
-for (let i = 1; i <= dateOfMonth; i++) {
+let dateNumberList = new Date(currentYear, currentMonth + 1, 0).getDate();
+const currentDate = new Date().getDate();
+for (let i = 1; i <= dateNumberList; i++) {
   const dateOption = document.createElement("option");
   dateOption.textContent = i;
-  setDay.value = currentDay;
-  setDay.appendChild(dateOption);
-
-  if (i < currentDay) {
-    dateOption.disabled = true;
-  }
+  setDate.appendChild(dateOption);
+  dateOption.hidden = i < currentDate;
 }
+setDate.value = currentDate;
 
 // Event Handler
 setYear.addEventListener("change", () => {
   if (setYear.value > currentYear) {
     for (let i = 0; i < setMonth.length; i++) {
-      setMonth[i].disabled = false;
+      setMonth[i].hidden = false;
     }
   } else {
     for (let i = 0; i < setMonth.length; i++) {
       if (i < currentMonth) {
-        setMonth[i].disabled = true;
+        setMonth[i].hidden = true;
+      }
+    }
+  }
+
+  if (setMonth.value <= monthNameList[currentMonth]) {
+    for (let i = 0; i < setDate.length; i++) {
+      setDate[i].hidden = false;
+    }
+  }
+  if (setYear.value <= currentYear) {
+    for (let i = 0; i < setDate.length; i++) {
+      if (i < currentDate) {
+        setDate[i].hidden = true;
+        setMonth.value = monthNameList[currentMonth];
+        setDate.value = currentDate;
       }
     }
   }
 });
 
 setMonth.addEventListener("change", () => {
-  if (setMonth.value > monthNames[currentMonth]) {
-    for (let i = 0; i < setDay.length; i++) {
-      setDay[i].disabled = false;
+  setDate.innerHTML = "";
+  dateNumberList = new Date(
+    currentYear,
+    monthNameList.indexOf(setMonth.value) + 1,
+    0
+  ).getDate();
+  for (let i = 1; i <= dateNumberList; i++) {
+    const dateOption = document.createElement("option");
+    dateOption.textContent = i;
+    setDate.appendChild(dateOption);
+    dateOption.hidden = i < currentDate;
+  }
+  if (setMonth.value > monthNameList[currentMonth]) {
+    for (let i = 0; i < setDate.length; i++) {
+      setDate[i].hidden = false;
     }
   } else {
-    for (let i = 0; i < setDay.length; i++) {
-      if (i < currentDay) {
-        setDay[i].disabled = true;
-      }
+    for (let i = 0; i < setDate.length; i++) {
+      setDate[i].hidden = i < currentDate;
     }
+    setDate.value = currentDate;
   }
 });
 
@@ -87,5 +108,13 @@ document.querySelector("form").addEventListener("submit", submitForm);
 
 function submitForm(event) {
   event.preventDefault();
-  alert(`${setDay.value} ${setMonth.value} ${setYear.value}`);
+  const valueOfYear = setYear.value;
+  const valueOfDate = setDate.value;
+  let valueOfMonth;
+  if (monthNameList.indexOf(setMonth.value) + 1 < 10) {
+    valueOfMonth = `0${monthNameList.indexOf(setMonth.value) + 1}`;
+  } else {
+    valueOfMonth = monthNameList.indexOf(setMonth.value) + 1;
+  }
+  alert(`date=${valueOfYear}-${valueOfMonth}-${valueOfDate}`);
 }

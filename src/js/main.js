@@ -19,7 +19,7 @@ for (let i = currentYear; i < maximumYear; i++) {
 
 // Month
 const currentMonth = new Date().getMonth();
-const monthNameList = [];
+const monthName = [];
 for (let i = 0; i < 12; i++) {
   const monthOption = document.createElement("option");
   const monthList = new Date(currentYear, i).toLocaleDateString(
@@ -30,48 +30,39 @@ for (let i = 0; i < 12; i++) {
   );
 
   monthOption.textContent = monthList;
-  monthNameList.push(monthList);
+  monthName.push(monthList);
   setMonth.appendChild(monthOption);
-
   monthOption.hidden = i < currentMonth;
 }
-setMonth.value = monthNameList[currentMonth];
-
+setMonth.value = monthName[currentMonth];
 // Month Date
-let dateNumberList = new Date(currentYear, currentMonth + 1, 0).getDate();
+let date = new Date(currentYear, currentMonth + 1, 0).getDate();
 const currentDate = new Date().getDate();
-for (let i = 1; i <= dateNumberList; i++) {
+for (let i = 0; i <= date; i++) {
   const dateOption = document.createElement("option");
   dateOption.textContent = i;
   setDate.appendChild(dateOption);
   dateOption.hidden = i < currentDate;
 }
 setDate.value = currentDate;
-
 // Event Handler
 setYear.addEventListener("change", () => {
-  if (setYear.value > currentYear) {
-    for (let i = 0; i < setMonth.length; i++) {
+  for (let i = 0; i < setMonth.length; i++) {
+    if (setYear.value > currentYear) {
       setMonth[i].hidden = false;
-    }
-  } else {
-    for (let i = 0; i < setMonth.length; i++) {
+    } else {
       if (i < currentMonth) {
         setMonth[i].hidden = true;
+        setMonth.value = monthName[currentMonth];
       }
     }
   }
-
-  if (setMonth.value <= monthNameList[currentMonth]) {
-    for (let i = 0; i < setDate.length; i++) {
+  for (let i = 1; i < setDate.length; i++) {
+    if (setYear.value > currentYear) {
       setDate[i].hidden = false;
-    }
-  }
-  if (setYear.value <= currentYear) {
-    for (let i = 0; i < setDate.length; i++) {
+    } else {
       if (i < currentDate) {
         setDate[i].hidden = true;
-        setMonth.value = monthNameList[currentMonth];
         setDate.value = currentDate;
       }
     }
@@ -80,41 +71,37 @@ setYear.addEventListener("change", () => {
 
 setMonth.addEventListener("change", () => {
   setDate.innerHTML = "";
-  dateNumberList = new Date(
-    currentYear,
-    monthNameList.indexOf(setMonth.value) + 1,
+  let date = new Date(
+    setYear.value,
+    monthName.indexOf(setMonth.value) + 1,
     0
   ).getDate();
-  for (let i = 1; i <= dateNumberList; i++) {
+  const currentDate = new Date().getDate();
+  for (let i = 1; i <= date; i++) {
     const dateOption = document.createElement("option");
     dateOption.textContent = i;
     setDate.appendChild(dateOption);
-    dateOption.hidden = i < currentDate;
+    dateOption.hidden = false;
   }
-  if (setMonth.value > monthNameList[currentMonth]) {
-    for (let i = 0; i < setDate.length; i++) {
-      setDate[i].hidden = false;
-    }
-  } else {
-    for (let i = 0; i < setDate.length; i++) {
-      setDate[i].hidden = i < currentDate;
-    }
-    setDate.value = currentDate;
-  }
+  setDate.value = currentDate;
 });
-
 // Add event listener to the form for submission.
 document.querySelector("form").addEventListener("submit", submitForm);
 
 function submitForm(event) {
   event.preventDefault();
-  const valueOfYear = setYear.value;
-  const valueOfDate = setDate.value;
-  let valueOfMonth;
-  if (monthNameList.indexOf(setMonth.value) + 1 < 10) {
-    valueOfMonth = `0${monthNameList.indexOf(setMonth.value) + 1}`;
+
+  // Extract values from form fields
+  const year = setYear.value;
+  const date = setDate.value;
+  let month;
+  if (monthName.indexOf(setMonth.value) + 1 < 10) {
+    month = `0${monthName.indexOf(setMonth.value) + 1}`;
   } else {
-    valueOfMonth = monthNameList.indexOf(setMonth.value) + 1;
+    month = monthName.indexOf(setMonth.value) + 1;
   }
-  alert(`date=${valueOfYear}-${valueOfMonth}-${valueOfDate}`);
+  const queryString = `year=${year}&month=${month}&date=${date}`;
+
+  // Alert the constructed query string
+  alert(queryString);
 }

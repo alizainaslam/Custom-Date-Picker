@@ -4,19 +4,10 @@ const setDate = document.querySelector("#date");
 const submitBtn = document.querySelector("#submit-btn");
 
 const currentYear = new Date().getFullYear();
-const maximumNextYearLimit = currentYear + 10;
 
 // Year options
-for (let i = currentYear; i <= maximumNextYearLimit; i++) {
-  let optionElement = document.createElement("option");
-  optionElement.textContent = i;
-  optionElement.value = i;
-  setYear.appendChild(optionElement);
-}
-setYear.value = currentYear;
-
-function isLeapYear(year) {
-  return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
+for (let i = 0; i < 10; i++) {
+  setYear.children[i].textContent = currentYear + i;
 }
 
 // Month options
@@ -26,21 +17,16 @@ for (let i = 0; i < 12; i++) {
     navigator.language,
     { month: "long" }
   );
-  let optionElement = document.createElement("option");
-  optionElement.textContent = monthNameInBrowserLang;
-  optionElement.value = i;
-  setMonth.appendChild(optionElement);
-  optionElement.hidden = i < currentMonth;
+  setMonth.children[i].textContent = monthNameInBrowserLang;
+  setMonth.children[i].value = i;
+  setMonth.children[i].hidden = i < currentMonth;
 }
 setMonth.value = currentMonth;
 
 // Date options
-for (let i = 1; i <= 31; i++) {
-  let optionElement = document.createElement("option");
-  optionElement.textContent = i;
-  optionElement.value = i;
-  optionElement.hidden = i < new Date().getDate();
-  setDate.appendChild(optionElement);
+for (let i = 0; i < 31; i++) {
+  setDate.children[i].textContent = i + 1;
+  setDate.children[i].hidden = i < new Date().getDate() - 1;
 }
 setDate.value = new Date().getDate();
 
@@ -89,12 +75,9 @@ setMonth.addEventListener("change", updateDateOptions);
 
 // Submit Date / alert
 function submitDate() {
-  const selectedYear = setYear.value;
-  const selectedMonth = setMonth.value;
-  const selectedDate = setDate.value;
-  const fullDate = `${selectedYear}-${String(
-    Number(selectedMonth) + 1
-  ).padStart(2, "0")}-${String(selectedDate).padStart(2, "0")}`;
+  const fullDate = `${setYear.value}-${String(
+    Number(setMonth.value) + 1
+  ).padStart(2, "0")}-${String(setDate.value).padStart(2, "0")}`;
   alert(`Selected Date: ${fullDate}`);
 }
 

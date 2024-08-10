@@ -13,7 +13,7 @@
       <form>
         <!-- YEAR -->
         <label for="year">Year</label>
-        <select name="year" id="year">
+        <select name="year" id="year" aria-label="year">
           <option></option>
           <option></option>
           <option></option>
@@ -27,7 +27,7 @@
         </select>
         <!-- MONTH -->
         <label for="month">Month</label>
-        <select name="month" id="month">
+        <select name="month" id="month" aria-label="month">
           <option></option>
           <option></option>
           <option></option>
@@ -43,7 +43,7 @@
         </select>
         <!-- DAY -->
         <label for="date">Date</label>
-        <select name="date" id="date">
+        <select name="date" id="date" aria-label="day">
           <option></option>
           <option></option>
           <option></option>
@@ -77,6 +77,7 @@
           <option></option>
         </select>
         <!-- Btn -->
+        <custom-date-picker id="custom-date-picker"></custom-date-picker>
         <button type="submit" id="submit-btn">Submit</button>
       </form>
     </main>

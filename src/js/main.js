@@ -2,6 +2,7 @@ const setYear = document.querySelector("#year");
 const setMonth = document.querySelector("#month");
 const setDate = document.querySelector("#date");
 const submitBtn = document.querySelector("#submit-btn");
+const customDatePicker = document.querySelector("#custom-date-picker");
 
 const currentYear = new Date().getFullYear();
 
@@ -73,12 +74,72 @@ setYear.addEventListener("change", function () {
 // Event Listener => Month
 setMonth.addEventListener("change", updateDateOptions);
 
-// Submit Date / alert
-function submitDate() {
-  const fullDate = `${setYear.value}-${String(
-    Number(setMonth.value) + 1
-  ).padStart(2, "0")}-${String(setDate.value).padStart(2, "0")}`;
-  alert(`Selected Date: ${fullDate}`);
-}
+// Custom Element
 
-submitBtn.addEventListener("click", submitDate);
+class customDatePickerElement extends HTMLElement {
+  static formAssociated = true;
+  static observedAttributes = ["value", "name", "required"];
+  constructor() {
+    super();
+    this._internals = this.attachInternals();
+  }
+
+  get value() {
+    return this.getAttribute("value");
+  }
+  set value(newValue) {
+    return this.setAttribute("value", newValue);
+  }
+  get name() {
+    return this.getAttribute("name");
+  }
+  set name(newValue) {
+    return this.setAttribute("name", newValue);
+  }
+  get required() {
+    return this.getAttribute("required");
+  }
+  set required(isRequired) {
+    if (isRequired) {
+      this.setAttribute("required", "");
+    } else {
+      this.removeAttribute("required");
+    }
+  }
+  connectedCallback() {
+    this.name = "custom-date";
+    this.required = true;
+    this.updateValue();
+    setYear.addEventListener("input", () => this.updateValue());
+    setMonth.addEventListener("input", () => this.updateValue());
+    setDate.addEventListener("input", () => this.updateValue());
+  }
+  updateValue() {
+    const fullDate = `${setYear.value}-${String(
+      Number(setMonth.value) + 1
+    ).padStart(2, "0")}-${String(setDate.value).padStart(2, "0")}`;
+    this.value = fullDate;
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (name === "value") {
+      this._internals.setFormValue(newValue);
+    }
+  }
+  requiredHandler() {
+    if (!this.required) {
+      console.log("Required attribute is not set.");
+    } else {
+      console.log("Required attribute is set.");
+    }
+  }
+}
+customElements.define("custom-date-picker", customDatePickerElement);
+console.log(customDatePicker);
+
+document.querySelector("form").addEventListener("submit", (ev) => {
+  ev.preventDefault();
+  const formData = new FormData(ev.target);
+  const submit = formData.get("custom-date");
+  alert(submit);
+});
